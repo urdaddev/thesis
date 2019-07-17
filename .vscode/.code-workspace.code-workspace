@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "/home/urdad/thesis"
+		}
+	],
+	"settings": {
+		"editor.autoClosingBrackets": "always",
+		"editor.autoIndent": true,
+		"editor.fontSize": 20,
+		"editor.rulers": [2,4,6,8,10],
+		"C_Cpp.autoAddFileAssociations": true
+	}
+}

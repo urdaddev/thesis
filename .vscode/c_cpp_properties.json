@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/include/hdf5/openmpi",
+                "/usr/include/openmpi",
+                "/usr/local/lib",
+                "/usr/local/include",
+                "/usr/include",
+                "/usr/lib/x86_64-linux-gnu/openmpi/include",
+                "/usr/lib/x86_64-linux-gnu/openmpi/lib"
+
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/mpicc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/bin"
+                ]
+            }
+        }
+    ],
+    "version": 4
+}
