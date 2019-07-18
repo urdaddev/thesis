@@ -1,17 +1,19 @@
 #include <iostream>
 #include <cstdio>
-#include <iostream>
-#include <hdf5.h>
-#ifndef ARMA_USE_HDF5
-#define ARMA_USE_HDF5
-#endif
 #include <armadillo>
-#ifndef ARMA_USE_HDF5
-#define ARMA_USE_HDF5
-#endif
+#include <netcdf.h>
+#include <netcdf_par.h>
 
-int mian() {
-  
+int main() {
+  arma::Mat<float> dh;
+  dh.load("test.nc",arma::file_type::hdf5_binary);
+
+  std::cout<<dh.head_rows(2)<<std::endl;
+  std::cout<<dh.head_rows(0)<<std::endl;
+  std::cout<<dh.size()<<std::endl;
+  return 0;
+
+
   
  
 }
