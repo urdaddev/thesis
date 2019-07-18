@@ -1,6 +1,3 @@
-#ifndef AGSA_H
-#define AGSA_H
-
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -9,14 +6,17 @@
 #include <vector>
 #include <omp.h>
 #include <netcdf.h>
-#include <pnetcdf.h>
 #include <mpi.h>
+#include <pnetcdf.h>
 #include <assert.h>
+#ifndef AGSA_H
+#define AGSA_H
+
 
 
 namespace AGSA {
 	void testRead(void);
-	void testPread(MPI_Comm , int*);
+	void testPread(int*);
     
 }
 
