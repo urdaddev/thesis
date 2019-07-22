@@ -1,86 +1,183 @@
+#include "tbb/task_scheduler_init.h"
+#include "tbb/blocked_range.h"
+#include "tbb/parallel_for.h"
+#include "tbb/scalable_allocator.h"
 #include <iostream>
 #include <cmath>
 #include <stdio.h>
 #include <omp.h>
 #include <float.h>
+#include <malloc.h>
+#include <tbb/scalable_allocator.h>
+#include <tbb/memory_pool.h>
+#include <tbb/scalable_allocator.h>
 #include <armadillo>
-typedef float ycords[100];
-struct record{
-  arma::rowvec x[10];
-  arma::rowvec y[100];
-  int index;
+#include <tuple>
+#define NROW 235000
+#define NCOL 150
+#define SUCCESS {if( status==1){std::cout<<"success"<<std::endl;}}
+
+
+
+
+void Foo(float things){
+
+
+}
+
+class ApplyFoo {
+ float *const my_a;
+public:
+ void operator()( const tbb::blocked_range<size_t>& r ) const {
+ float *a = my_a;
+ for( size_t i=r.begin(); i!=r.end(); ++i )
+ Foo(a[i]);
+
+ }
+ ApplyFoo( float a[] ) :
+ my_a(a)
+ {}
+}; 
+
+
+#pragma omp declare target
+
+#pragma omp end declare target
+
+
+void count1(const arma::mat &M , float(* Box)[3]){
+   int k;
+  #pragma omp distribute parallel for shared(k,Box,M)
+      for (int i=0;i<10;i++){
+         for (int j=i+1;j<10;j++){
+            int ip=k;
+            Box[ip][0]=i;
+            Box[ip][1]=j;
+            Box[ip][2]=rowdis(M.row(i),M.row(j));
+            ++k;
+       }
+    }
+}
+
+void count2(int N){
+#pragma omp distribute parallel for simd static(1)
+for (int i = 0; i < N; i++) {
+    for (int j=i+1; j<N;j++){
+        
+        printf("hello from %d with (%d ,%d) \n",omp_get_thread_num(),i,j);
+       // #pragma omp parallel sections
+       // {
+         
+
+
+       // }
+       
+
+    }
+  }
+}
+
+struct Coordinate
+{
+  int x;
+  int y;
+ 
+  Coordinate(int x,int y): 
+    x(x),y(y)
+    {
+    }
+  bool operator<(const Coordinate &p2) const
+  {
+     
+        return x<p2.x||x==p2.x&&y<p2.y;
+  }
+  bool operator==(const Coordinate &p2) const
+  {
+      if((x==p2.x&&y==p2.y)||(y==p2.x&&x==p2.y))
+      {
+        return true;
+      }
+      else
+      {
+         return false;
+      }
+      
+  }
+};
+
+
+float rowdis(const arma::rowvec &M1,const arma::rowvec &M2){
+  float sum;
+  for (int i=0 ;i<M1.n_elem;i++){
+           sum +=  (M1[i]-M2[i])*(M1[i]-M2[i]);
+
+  }
+  return std::sqrt(sum);
+
+
 
 };
 
 
 
-static void calc_distance_array(const arma::Mat<double> &bigvec, arma::colvec *box)
-{
-   const int N=bigvec.n_rows;
-  const int K=bigvec.n_cols;
-
-  int i,j;
-  double dx[K]={0};
-  int index=N*(N-1)/2;
-#pragma omp parallel for reduction(-:index) shared(i,box,bigvec) default(none) 
-  for (i=0;i<N;i++){
-    for (int j=i+1; j<N; j++) {
-      int id = omp_get_thread_num(); 
-      printf("index : %d \n",id);
-      int locali=index--;
-       box[locali]=arma::dot(bigvec.row(i)-bigvec.row(j),bigvec.row(i)-bigvec.row(j));
-        
-    }
-  }
-}
-
-float euclDist(const arma::mat& first, const arma::mat& second)
-{
-    float dist = 0;
-    const double *const firstp = first.mem;
-    const double *const secondp = second.mem;
-#pragma omp parallel for reduction(+:dist)
-    for(auto i = 0;  i < first.n_rows;  ++i) {
-        auto const d = firstp[i] - secondp[i];
-        dist += d * d;
-    }
-    return std::sqrt(dist);
-}
-
-
 
 int main(){
+  
+std::ofstream outfile ("test.txt");
+const int K=N*(N-1)/2;
+double **outp;
+std::map<Coordinate,int> mymap;
 
-
-
-const arma::mat matrix=  { 
-    {0.1339, 0.9114, 0.0895, 0.2498, 0.2860},
-    {0.1364, 0.4708, 0.5562, 0.2919, 0.7490}, 
-    {0.4512, 0.0744, 0.7897, 0.8032, 0.4581},
-    {0.0210, 0.5698, 0.2216, 0.4746, 0.3062},
-    {0.3509, 0.6352, 0.4187, 0.2699, 0.3218},
-    {0.1339, 0.9114, 0.0895, 0.2498, 0.2860},
-    {0.1364, 0.4708, 0.5562, 0.2919, 0.7490}, 
-    {0.4512, 0.0744, 0.7897, 0.8032, 0.4581},
-    {0.0210, 0.5698, 0.2216, 0.4746, 0.3062},
-    {0.3509, 0.6352, 0.4187, 0.2699, 0.3218}
-}; 
-const int N=matrix.n_rows;
-double box[45]={0};
-int k=0;
-#pragma omg distribute parallel for collapse(2) shared(k,box)
-for (int i=0;i<matrix.n_rows;i++){
-  for (int j=i+1;j<matrix.n_rows;j++){
-    printf("(i %d , j %d k,%d)\n",i,j,k);
-    int ip=k;
-    box[ip]=arma::dot(matrix.row(i)-matrix.row(j),matrix.row(i)-matrix.row(j));
-    printf("box %f \n",box[ip]);
-    k++;
-  }
-}
-
-std::cout<<box[0]<<std::endl;
+std::map<Coordinate,int,int>::iterator it;
+int i;
+int j;
+int m;
+#pragma omp parallel for schedule(static) ordered private(j) shared(i) reduction(+:m)  
+for(i = 0; i < N; i++) 
+  for(j=i+1;j<N;j++)
+  #pragma omp atomic
+    m++;
+    mymap.insert(std::pair<Coordinate,int>({i,j},m));
 
 return 0;
 }
 
+
+  
+    
+  
+    
+
+      
+         
+        
+
+
+         
+       
+         
+
+
+       // }
+       
+
+    }
+  }
+
+  
+}
+
+int main(){
+  
+
+
+ 
+arma::arma_rng::set_seed(1);
+const arma::mat X(100,15,arma::fill::randu);
+arma::mat box(100,2,arma::fill::randu); 
+#define N 10
+#define P 10
+
+test2(X,box);
+
+}

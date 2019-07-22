@@ -7,7 +7,7 @@
 #include <netcdf_par.h>
 #include <armadillo>
 #define NROW 10000
-#define NCOL 10
+#define NCOL 1
 #define NY 10
 #define NX 4
 
@@ -47,17 +47,9 @@ int main(int argc, char * argv[])
    
      /* First, fill the entire array with zeros, using a blocking I/O.
            Every process writes a subarray of size NY * myNX */
- 
+    
   
- arma::mat temp(NROW,NCOL);
-
-
-  
-
-
-     
- 
-
+   arma::mat temp(NROW,NCOL);
     omode = NC_NOWRITE;
    
 

@@ -42,8 +42,7 @@ int main(int argc, char *argv[])
 
     ierr = MPI_Init(&argc, &argv);
 
-    if (ierr != 0)
-    {
+    if (ierr != 0){
         exit(1);
     }
 
@@ -56,9 +55,9 @@ int main(int argc, char *argv[])
     }
     ierr = MPI_Comm_rank(MPI_COMM_WORLD, &id);
 
-    if (id == 0)
-    {
-        timestamp();
+    if (id == 0){
+       
+
         std::cout << "begin master process" << std::endl;
     }
 
@@ -136,24 +135,6 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void timestamp()
-{
-#define TIME_SIZE 40
-
-    static char time_buffer[TIME_SIZE];
-    const struct std::tm *tm_ptr;
-    std::time_t now;
-
-    now = std::time(NULL);
-    tm_ptr = std::localtime(&now);
-
-    std::strftime(time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr);
-
-    std::cout << time_buffer << "\n";
-
-    return;
-#undef TIME_SIZE
-}
 
 void GroupComm(int gid, int mygroup)
 {
@@ -168,3 +149,6 @@ void GroupComm(int gid, int mygroup)
         printf("group %d leader", mygroup);
     }
 }
+
+
+

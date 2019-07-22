@@ -105,7 +105,7 @@ int main(int argc,char *argv[]){
 
     printf("activate %d in group j \n", id);
   
-    testPread(jcomm_id, id, jid);
+    jdosth(id, jid);
   }
   if (jid == 0)
   {
@@ -116,7 +116,7 @@ int main(int argc,char *argv[]){
   {
     printf("activate %d in group i \n", id);
 
-    idosth(icomm_id, &id, &iid);
+    idosth(id, iid,);
   }
   if (iid == 0)
   {
@@ -153,68 +153,9 @@ void timestamp()
 #undef TIME_SIZE
 }
 
-void idosth(MPI_Comm leader, int *myid, int *mygroupid)
+void idosth(const int &groupid,const int &myid, double &somebox)
 {
 
-  printf("process %p in group %p says hello \n", myid, mygroupid);
+  printf("process %p in group %p says hello \n", myid, groupid);
 }
 
-void testPread(MPI_Comm leader, int myid, int mygroupid)
-{
-  
-#ifndef filename
-#define filename "test.nc"
-#endif
-#ifndef NROW
-#define NROW 10000
-#endif
-#ifndef NCOL
-#define NCOL 2
-#endif
-#define RANK 1
-  int i, j, rank, nprocs, ret;
-  int ncid, ndims, ngatts, unlimited, var_ndims, var_natts;
-  MPI_Offset *dim_sizes, var_size;
-  int *requests, *statuses, *dimids = NULL;
-  float **data;
-  nc_type type;
-  float *buff;
-  int *reqs;
-
-  float *buf[NROW][NCOL];
-  MPI_Offset len, global_ny, global_nx, local_ny, local_nx;
-  MPI_Offset start[2], count[2];
-  int omode = NC_NOWRITE;
-  ret = nc_open_par(filename, omode, MPI_COMM_WORLD, MPI_INFO_NULL, &ncid);
-  
- 
-
-  int myvar;
-
-  if (myid == 0)
-  {
-    int myvar;
-    ret = ncmpi_inq_varid(ncid, "As", &myvar);
-
-    assert(ret != FAIL);
-    printf("variable attribute : %s by %d  has id of %d \n", columnames[i], myid, myvar);
-    }
-
-    if(myid==1){
-      int myvar;
-      ret = ncmpi_inq_varid(ncid, "Bs", &myvar);
-      assert(ret != FAIL);
-      printf("variable attribute : %s by %d  has id of %d \n", columnames[i], myid, myvar);
-    }
-    
-    
-    
-   
-    //   ret = ncmpi_iget_vara_float(ncid, varid, start, count, buf[i][*myid], reqs++);
-    //   assert(ret != FAIL);
-  
- 
-    ret = ncmpi_close(ncid);
-    assert(ret != FAIL);
-  
-}
